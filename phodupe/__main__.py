@@ -13,8 +13,8 @@ def main():
         print('No dupe files found!')
         exit()
 
-    user_input = input(str(len(dupe_files)) + ' duplicate file names found. Enter \'y\' to delete or \'n\' to abort:\n')
-
+    user_input = input("{} duplicate file names found. Enter 'y' to delete or 'n' to abort:\n".format(len(dupe_files)))
+    
     if user_input == 'y':
         DupeFinder.deleteFiles(dupe_files, destination1, destination2)
         print('Files deleted, exiting...')

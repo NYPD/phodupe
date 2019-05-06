@@ -50,5 +50,5 @@ class DupeFinder:
             Path of the second directory
         """
         for file in fileNames:
-            os.remove(directory1 + '\\' + file)
-            os.remove(directory2 + '\\' + file)
+            os.remove(os.path.join(directory1, file))
+            os.remove(os.path.join(directory2, file))
