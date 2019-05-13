@@ -7,7 +7,7 @@ def main():
     destination1 = sys.argv[1]
     destination2 = sys.argv[2]
     
-    dupe_files = DupeFinder.getDuplicateFileNames(destination1, destination2)
+    dupe_files = DupeFinder.getDuplicateFileNames(destination1, destination2, False)
 
     if len(dupe_files) is 0:
         print('No dupe files found!')
