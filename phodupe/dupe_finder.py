@@ -1,6 +1,7 @@
 import os
 import pathlib
-
+import glob
+import itertools
 
 class DupeFinder:
     """
@@ -8,9 +9,17 @@ class DupeFinder:
     """
 
     @staticmethod
-    def getDuplicateFileNames(directory1, directory2, sameExtension = True):
+    def getDuplicateFileNames(directory1, directory2):
         """
-        Return a list of duplicate file names in both directories
+        Return a list of duplicate file name "stems" in both directories.
+        
+        e.g. : 
+        
+        directory1 : [a.png, b.png]
+        
+        directory2 : [a.png, b.png]
+        
+        returns: [a, b]
 
         Parameters
         ----------
@@ -28,32 +37,22 @@ class DupeFinder:
         directory1Path = pathlib.Path(directory1)
         directory2Path = pathlib.Path(directory2)
 
-        directory1Files = os.listdir(directory1Path)
-        directory2Files = os.listdir(directory2Path)
+        directory1FilesNoExt = []
+        directory2FilesNoExt = []
 
-        directory1FilesNoExt = {}
-        directory2FilesNoExt = {}
-
-        if sameExtension == False:
-            for i, file in enumerate(directory1Files):
-                purePath = pathlib.Path(directory1 + '/' + file)
-                directory1FilesNoExt[purePath.stem] = purePath.suffix
-            for i, file in enumerate(directory2Files):
-                purePath = pathlib.Path(directory2 + '/' + file)
-                directory2FilesNoExt[purePath.stem] = purePath.suffix
+        for file in os.listdir(directory1Path):
+            purePath = pathlib.Path(os.path.join(directory1, file))
+            directory1FilesNoExt.append(purePath.stem)
+        for file in os.listdir(directory2Path):
+            purePath = pathlib.Path(os.path.join(directory2, file))
+            directory2FilesNoExt.append(purePath.stem)
 
         dupeFiles = []
 
-        if sameExtension:
-            for file in directory1Files:
-                if(file in directory2Files):
-                    dupeFiles.append(file)
-        else:
-            for fileName, ext in directory1FilesNoExt.items():
-                if fileName in directory2FilesNoExt:
-                    dupeFiles.append(fileName + ext)
-        //We need to delete both extensions
-
+        for fileName in directory1FilesNoExt:
+            if fileName in directory2FilesNoExt:
+                dupeFiles.append(fileName)
+        
         return dupeFiles
 
     @staticmethod
@@ -71,5 +70,12 @@ class DupeFinder:
             Path of the second directory
         """
         for file in fileNames:
-            os.remove(os.path.join(directory1, file))
-            os.remove(os.path.join(directory2, file))
+            
+            directory1Path = os.path.join(directory1, file)
+            directory2Path = os.path.join(directory2, file)
+            
+            directory1Glob = glob.glob('{}.*'.format(directory1Path))
+            directory2Glob = glob.glob('{}.*'.format(directory2Path))
+            
+            for filePath in itertools.chain(directory1Glob, directory2Glob):
+                os.remove(filePath)
