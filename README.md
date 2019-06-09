@@ -10,7 +10,7 @@ I used this as an opportunity to begin learning python. It was created for a ver
 
 ## How do to install / run
 
-(There are probobly better ways to run this, but i'm a python noob)
+(There are probably better ways to run this, but i'm a python noob)
 
 - Navigate to the folder you downloaded the git project to
   - cd \development\git\Phodupe\
