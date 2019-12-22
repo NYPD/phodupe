@@ -16,5 +16,6 @@ I used this as an opportunity to begin learning python. It was created for a ver
   - cd \development\git\Phodupe\
 - Install the python script
   - python .\setup.py install
-- Run the script by passing two directories
+- Run the script by passing two directories:
   - python phodupe "C:\Users\NYPD\Desktop\OG Phone Walls" "C:\Users\NYPD\Desktop\2Delete"
+  - python phodupe "C:\Users\NYPD\Desktop\New folder" "\\freenas\HGST 4TB\Pictures\Phone Walls\"
