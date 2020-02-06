@@ -9,73 +9,93 @@ class DupeFinder:
     """
 
     @staticmethod
-    def getDuplicateFileNames(directory1, directory2):
+    def getDuplicateFileNames(directory1, destinationsToDelete, recursivelySearch):
         """
-        Return a list of duplicate file name "stems" in both directories.
+        Returns a list of duplicate file name "stems" using directory1 as the
+        master directory and then recursively or not (if passed in True) checking all the destinationsToDelete.
         
         e.g. : 
         
+        recursivelySearch = True
+
         directory1 : [a.png, b.png]
         
-        directory2 : [a.png, b.png]
+        destinationsToDelete : [a.png, b.png, dir1 : [a.png, c.png]]
         
         returns: [a, b]
 
         Parameters
         ----------
         directory1 : str
-            Path of the first directory
-        directory2 : str
-            Path of the second directory
+
+                Path of the first directory
+
+        destinationsToDelete : list or str
+
+                List of paths to multiple directories or singular string path to 1
+
+        recursivelySearch : boolean
+
+                True or False depending if recursively searching is required
         
         Returns
         -------
         list
-            A list of the duplicate file names between both directories. If no
-            duplicate files are found, an empty list is returned
+
+            A list of the duplicate file names between all directories using the first parameter passed in
+            as the master directory. If no duplicate files are found, an empty list is returned
         """
         directory1Path = pathlib.Path(directory1)
-        directory2Path = pathlib.Path(directory2)
+
+        destinationDirectories = []
+
+        if type(destinationsToDelete) is list:
+            for destination in destinationsToDelete:
+                destinationDirectories.append(pathlib.Path(destination))
+        else:
+            destinationDirectories.append(pathlib.Path(destination))
+
+        if recursivelySearch:
+            for destinationDir in destinationDirectories:
+                destinationDirectories.extend([f.path for f in os.scandir(destinationDir) if f.is_dir()])
 
         directory1FilesNoExt = []
-        directory2FilesNoExt = []
+        destinationDirectoriesFilesNoExt = []
 
         for file in os.listdir(directory1Path):
             purePath = pathlib.Path(os.path.join(directory1, file))
             directory1FilesNoExt.append(purePath.stem)
-        for file in os.listdir(directory2Path):
-            purePath = pathlib.Path(os.path.join(directory2, file))
-            directory2FilesNoExt.append(purePath.stem)
+
+        for destinationDir in destinationDirectories:
+            for file in os.listdir(destinationDir):
+                purePath = pathlib.Path(os.path.join(destinationDir, file))
+                destinationDirectoriesFilesNoExt.append(purePath.stem)
 
         dupeFiles = []
 
         for fileName in directory1FilesNoExt:
-            if fileName in directory2FilesNoExt:
+            if fileName in destinationDirectoriesFilesNoExt:
                 dupeFiles.append(fileName)
         
         return dupeFiles
 
     @staticmethod
-    def deleteFiles(fileNames, directory1, directory2):
+    def deleteFiles(fileNames, destinationsToDelete, recursivelySearch=False):
         """
-        Deletes the files provided in both directories
+        Deletes the files provided in all directories passed in
 
         Parameters
         ----------
         fileNames : list
-            List of string files names to delete
-        directory1 : str
-            Path of the first directory
-        directory2 : str
-            Path of the second directory
+
+                List of string files names to delete
+        destinationsToDelete : list
+                List of directory strings to delete
         """
         for file in fileNames:
             
-            directory1Path = os.path.join(directory1, file)
-            directory2Path = os.path.join(directory2, file)
+            for destination in destinationsToDelete:
+                directoryGlob = glob.glob('{}{}{}.*'.format(destination, '/**/',file), recursive=recursivelySearch)
             
-            directory1Glob = glob.glob('{}.*'.format(directory1Path))
-            directory2Glob = glob.glob('{}.*'.format(directory2Path))
-            
-            for filePath in itertools.chain(directory1Glob, directory2Glob):
-                os.remove(filePath)
+                for filePath in directoryGlob:
+                    os.remove(filePath)

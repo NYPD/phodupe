@@ -5,9 +5,19 @@ from phodupe.dupe_finder import DupeFinder
 def main():
 
     destination1 = sys.argv[1]
-    destination2 = sys.argv[2]
+    destinationsToDelete = []
+
+    for destinationToDelete in sys.argv[2:]:
+        destinationsToDelete.append(destinationToDelete)
+
+    recursivelySearch = False
+
+    user_input = input("Would you like to recursivley search all the destination directories? 'y' or 'n'\n")
+
+    if user_input == 'y':
+        recursivelySearch = True
     
-    dupe_files = DupeFinder.getDuplicateFileNames(destination1, destination2)
+    dupe_files = DupeFinder.getDuplicateFileNames(destination1, destinationsToDelete, recursivelySearch)
 
     if len(dupe_files) is 0:
         print('No dupe files found!')
@@ -16,7 +26,8 @@ def main():
     user_input = input("{} duplicate file names found. Enter 'y' to delete or 'n' to abort:\n".format(len(dupe_files)))
     
     if user_input == 'y':
-        DupeFinder.deleteFiles(dupe_files, destination1, destination2)
+        destinationsToDelete.append(destination1)
+        DupeFinder.deleteFiles(dupe_files, destinationsToDelete, recursivelySearch)
         print('Files deleted, exiting...')
     else:
         print('No files deleted, aborting...')
