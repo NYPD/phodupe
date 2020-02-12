@@ -60,7 +60,7 @@ class DupeFinder:
                 destinationDirectories.extend([f.path for f in os.scandir(destinationDir) if f.is_dir()])
 
         directory1FilesNoExt = []
-        destinationDirectoriesFilesNoExt = []
+        destinationDirectoriesFilesNoExt = set()
 
         for file in os.listdir(directory1Path):
             purePath = pathlib.Path(os.path.join(directory1, file))
@@ -69,7 +69,7 @@ class DupeFinder:
         for destinationDir in destinationDirectories:
             for file in os.listdir(destinationDir):
                 purePath = pathlib.Path(os.path.join(destinationDir, file))
-                destinationDirectoriesFilesNoExt.append(purePath.stem)
+                destinationDirectoriesFilesNoExt.add(purePath.stem)
 
         dupeFiles = []
 
@@ -77,6 +77,8 @@ class DupeFinder:
             if fileName in destinationDirectoriesFilesNoExt:
                 dupeFiles.append(fileName)
         
+        print(len(dupeFiles))
+
         return dupeFiles
 
     @staticmethod
