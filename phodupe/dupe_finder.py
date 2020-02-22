@@ -77,8 +77,6 @@ class DupeFinder:
             if fileName in destinationDirectoriesFilesNoExt:
                 dupeFiles.append(fileName)
         
-        print(len(dupeFiles))
-
         return dupeFiles
 
     @staticmethod
