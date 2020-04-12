@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='phodupe',
-    version='v0.0.3',
+    version='v0.0.4',
     packages=['phodupe'],
     url='https://github.com/NYPD/phodupe',
     license='MIT',
