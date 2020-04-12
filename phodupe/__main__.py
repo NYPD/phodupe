@@ -24,13 +24,15 @@ def main():
     if user_input == 'y':
         allDirectoriesMustHaveSameDupes = True
 
-    dupe_files = DupeFinder.getDuplicateFileNames(destination1, destinationsToDelete, recursivelySearch, allDirectoriesMustHaveSameDupes)
+    dupeFileInfoTuple = DupeFinder.getDuplicateFileNames(destination1, destinationsToDelete, recursivelySearch, allDirectoriesMustHaveSameDupes)
+    dupe_files = dupeFileInfoTuple[0]
+    dupeFileLength = len(dupe_files)
 
-    if len(dupe_files) is 0:
+    if dupeFileLength is 0:
         print('No dupe files found!')
         exit()
 
-    user_input = input("{} duplicate file names found. Enter 'y' to delete or 'n' to abort:\n".format(len(dupe_files)))
+    user_input = input("{} duplicate file names found across {} directories. Enter 'y' to delete or 'n' to abort:\n".format(dupeFileLength, dupeFileInfoTuple[1]))
     
     if user_input == 'y':
         destinationsToDelete.append(destination1)
