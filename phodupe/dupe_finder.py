@@ -95,7 +95,13 @@ class DupeFinder:
         for file in fileNames:
             
             for destination in destinationsToDelete:
-                directoryGlob = glob.glob('{}{}{}.*'.format(destination, '/**/',file), recursive=recursivelySearch)
-            
+
+                if recursivelySearch:
+                    fileDestination = '{}{}{}.*'.format(destination, '/**/',file)
+                else:
+                    fileDestination = '{}/{}.*'.format(destination,file)
+                
+                directoryGlob = glob.glob(fileDestination, recursive=recursivelySearch)
+
                 for filePath in directoryGlob:
                     os.remove(filePath)
