@@ -17,7 +17,14 @@ def main():
     if user_input == 'y':
         recursivelySearch = True
     
-    dupe_files = DupeFinder.getDuplicateFileNames(destination1, destinationsToDelete, recursivelySearch)
+    allDirectoriesMustHaveSameDupes = False
+
+    user_input = input("Must all directories have the same exact file name? 'y' or 'n'\n")
+
+    if user_input == 'y':
+        allDirectoriesMustHaveSameDupes = True
+
+    dupe_files = DupeFinder.getDuplicateFileNames(destination1, destinationsToDelete, recursivelySearch, allDirectoriesMustHaveSameDupes)
 
     if len(dupe_files) is 0:
         print('No dupe files found!')
