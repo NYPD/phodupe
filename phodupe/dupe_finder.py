@@ -9,20 +9,44 @@ class DupeFinder:
     """
 
     @staticmethod
-    def getDuplicateFileNames(directory1, destinationsToDelete, recursivelySearch):
+    def getDuplicateFileNames(directory1, destinationsToDelete, recursivelySearch, matchAllDirectories):
         """
-        Returns a list of duplicate file name "stems" using directory1 as the
-        master directory and then recursively or not (if passed in True) checking all the destinationsToDelete.
+        Returns a tuple containing list of duplicate file name "stems" and a count of directories dupe file name "stems"
+        were found.
         
-        e.g. : 
+        It uses directory1 as the master directory and then recursively or not (if recursivelySearch is True) checking all the destinationsToDelete for
+        duplicate file "stems". If matchAllDirectories is set to true, then all destinationsToDelete (and recursive directories if required) 
+        must all have the same file name "stem"
+        
+        ---
+
+        e.g. 1 : 
         
         recursivelySearch = True
+
+        matchAllDirectories = False
 
         directory1 : [a.png, b.png]
         
         destinationsToDelete : [a.png, b.png, dir1 : [a.png, c.png]]
         
-        returns: [a, b]
+        returns: ([a, b], 3)
+
+        ---
+
+        e.g. 2 : 
+        
+        recursivelySearch = True
+
+        matchAllDirectories = True
+
+        directory1 : [a.png, b.png]
+        
+        destinationsToDelete : [a.png, b.png, dir1 : [a.png, c.png]]
+        
+        returns: ([a], 3)
+
+        ---
 
         Parameters
         ----------
@@ -40,44 +64,72 @@ class DupeFinder:
         
         Returns
         -------
-        list
+        
+        (list, int):
+            
+            list
 
-            A list of the duplicate file names between all directories using the first parameter passed in
-            as the master directory. If no duplicate files are found, an empty list is returned
+                A list of the duplicate file names between all directories using the first parameter passed in
+                as the master directory. If no duplicate files are found, an empty list is returned
+
+            int
+
+                count of directeries dupe file names were found
         """
         directory1Path = pathlib.Path(directory1)
-
-        destinationDirectories = []
+        destinationDirectoryPaths = []
 
         if type(destinationsToDelete) is list:
             for destination in destinationsToDelete:
-                destinationDirectories.append(pathlib.Path(destination))
+                destinationDirectoryPaths.append(pathlib.Path(destination))
         else:
-            destinationDirectories.append(pathlib.Path(destination))
+            destinationDirectoryPaths.append(pathlib.Path(destinationsToDelete))
 
         if recursivelySearch:
-            for destinationDir in destinationDirectories:
-                destinationDirectories.extend([f.path for f in os.scandir(destinationDir) if f.is_dir()])
+            for destinationDir in destinationDirectoryPaths:
+                destinationDirectoryPaths.extend([f.path for f in os.scandir(destinationDir) if f.is_dir()])
 
         directory1FilesNoExt = []
-        destinationDirectoriesFilesNoExt = set()
+        destinationDirectoriesFilesListNoExt = []
 
         for file in os.listdir(directory1Path):
             purePath = pathlib.Path(os.path.join(directory1, file))
             directory1FilesNoExt.append(purePath.stem)
 
-        for destinationDir in destinationDirectories:
+        for destinationDir in destinationDirectoryPaths:
+
+            destinationDirectoriesFilesNoExt = []
+
             for file in os.listdir(destinationDir):
                 purePath = pathlib.Path(os.path.join(destinationDir, file))
-                destinationDirectoriesFilesNoExt.add(purePath.stem)
+                destinationDirectoriesFilesNoExt.append(purePath.stem)
+            
+            destinationDirectoriesFilesListNoExt.append(destinationDirectoriesFilesNoExt)
 
-        dupeFiles = []
+        dupeFiles = set()
+        dupeDirectoryIndexes = set()
 
         for fileName in directory1FilesNoExt:
-            if fileName in destinationDirectoriesFilesNoExt:
-                dupeFiles.append(fileName)
+
+            if matchAllDirectories:
+                fileCount = 0
+                for destinationDirectoryFilesListNoExt in destinationDirectoriesFilesListNoExt:
+                    if fileName in destinationDirectoryFilesListNoExt:
+                        fileCount += 1
+
+                if fileCount == len(destinationDirectoriesFilesListNoExt):    
+                    dupeFiles.add(fileName)
+            else:
+
+                for x in range(len(destinationDirectoriesFilesListNoExt) - 1):
+                    if fileName in destinationDirectoriesFilesListNoExt[x]:
+                        dupeFiles.add(fileName)
+                        dupeDirectoryIndexes.add(x)
         
-        return dupeFiles
+        if matchAllDirectories:
+            return (dupeFiles, len(destinationDirectoryPaths) + 1)
+        else:
+            return (dupeFiles, len(dupeDirectoryIndexes) + 1)
 
     @staticmethod
     def deleteFiles(fileNames, destinationsToDelete, recursivelySearch=False):
@@ -95,7 +147,13 @@ class DupeFinder:
         for file in fileNames:
             
             for destination in destinationsToDelete:
-                directoryGlob = glob.glob('{}{}{}.*'.format(destination, '/**/',file), recursive=recursivelySearch)
-            
+
+                if recursivelySearch:
+                    fileDestination = '{}{}{}.*'.format(destination, '/**/',file)
+                else:
+                    fileDestination = '{}/{}.*'.format(destination,file)
+                
+                directoryGlob = glob.glob(fileDestination, recursive=recursivelySearch)
+
                 for filePath in directoryGlob:
                     os.remove(filePath)
