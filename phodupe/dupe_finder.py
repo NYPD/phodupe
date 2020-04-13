@@ -106,7 +106,7 @@ class DupeFinder:
             
             destinationDirectoriesFilesListNoExt.append(destinationDirectoriesFilesNoExt)
 
-        dupeFiles = []
+        dupeFiles = set()
         dupeDirectoryIndexes = set()
 
         for fileName in directory1FilesNoExt:
@@ -118,14 +118,13 @@ class DupeFinder:
                         fileCount += 1
 
                 if fileCount == len(destinationDirectoriesFilesListNoExt):    
-                    dupeFiles.append(fileName)
+                    dupeFiles.add(fileName)
             else:
 
-                for x in range(len(destinationDirectoriesFilesListNoExt)):
+                for x in range(len(destinationDirectoriesFilesListNoExt) - 1):
                     if fileName in destinationDirectoriesFilesListNoExt[x]:
-                        dupeFiles.append(fileName)
+                        dupeFiles.add(fileName)
                         dupeDirectoryIndexes.add(x)
-                        break
         
         if matchAllDirectories:
             return (dupeFiles, len(destinationDirectoryPaths) + 1)
