@@ -22,3 +22,5 @@ I used this as an opportunity to begin learning python. It was created for a ver
     - `python phodupe "C:\Users\NYPD\Desktop\OG Phone Walls" "C:\Users\NYPD\Desktop\2Delete"`
   - Deletes dupes from OG Phone Walls, 2Delete , and AlsoDelete:
     - `python phodupe "C:\Users\NYPD\Desktop\OG Phone Walls" "C:\Users\NYPD\Desktop\2Delete" "C:\Users\NYPD\Desktop\AlsoDelete"`
+  - Deletes from netowrk Drives:
+   -  `python phodupe "//TrueNas/HGST 4TB/Pictures/Phone Walls/OG Phone Walls/" "//TrueNas/HGST 4TB/Pictures/Phone Walls/Post-Ratio/20x9/" "//TrueNas/HGST 4TB/Pictures/Phone Walls/2DELETE/"` 
