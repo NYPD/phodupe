@@ -16,6 +16,7 @@ I used this as an opportunity to begin learning python. It was created for a ver
   - `cd \development\git\Phodupe\`
 - Install the python script
   - `python .\setup.py install`
+    - Might need to run `pip install setuptools` beforehand  
 - Run the script by passing a source directory and any number of "delete" directories
   - Deletes dupes from OG Phone Walls and 2Delete:
     - `python phodupe "C:\Users\NYPD\Desktop\OG Phone Walls" "C:\Users\NYPD\Desktop\2Delete"`
